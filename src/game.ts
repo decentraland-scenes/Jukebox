@@ -1,7 +1,9 @@
-// import sound controller
 import { playSound } from '@decentraland/SoundController'
+import { PushButton, ButtonState } from './modules/buttons';
 
-// Define song list
+
+
+/////// Define song list
 const songs: {src: string, name: string}[] = 
 [
   {src: "sounds/Telemann.mp3", name: "Telemann"},
@@ -11,57 +13,17 @@ const songs: {src: string, name: string}[] =
 ];
 
 
-////////////////////////
-// Custom components
-
-@Component('buttonState')
-export class ButtonState {
-  pressed: boolean = false
-  zUp: number = 0
-  zDown: number = 0
-  fraction: number = 0
-  constructor(zUp: number, zDown: number){
-    this.zUp = zUp
-    this.zDown = zDown
-  }
-}
-
-///////////////////////////
-// Entity groups
-
-const buttons = engine.getComponentGroup(Transform, ButtonState)
-
-///////////////////////////
-// Systems
-
-export class PushButton implements ISystem {
-  update() {
-    for (let button of buttons.entities) {
-      let transform = button.get(Transform)
-      let state = button.get(ButtonState)
-      if (state.pressed == true && state.fraction < 1){
-        transform.position.z = Scalar.Lerp(state.zUp, state.zDown, state.fraction)
-        state.fraction += 1/8
-      } 
-      else if (state.pressed == false && state.fraction > 0){
-        transform.position.z = Scalar.Lerp(state.zUp, state.zDown, state.fraction)
-        state.fraction -= 1/8
-      }
-    }
-  }
-}
-
+// Start button system
 engine.addSystem(new PushButton)
 
 
 ///////////////////////////
 // INITIAL ENTITIES
 
-
 // Jukebox
 const jukebox = new Entity()
-jukebox.set(new GLTFShape("models/Jukebox.gltf"))
-jukebox.set(new Transform({
+jukebox.add(new GLTFShape("models/Jukebox.gltf"))
+jukebox.add(new Transform({
   position: new Vector3(5, 0, 9.5),
   rotation: Quaternion.Euler(0, 0 ,0),
   scale: new Vector3(0.6, 0.6, 0.6)
@@ -83,14 +45,14 @@ for (let i = 0; i < songs.length; i ++){
 
   // groups the button itself and label
   const buttonWrapper = new Entity()
-  buttonWrapper.set(new Transform({
+  buttonWrapper.add(new Transform({
     position: new Vector3(posX, posY, -0.7)
   }))
   buttonWrapper.setParent(jukebox)
   engine.addEntity(buttonWrapper)
 
   const buttonLabel = new Entity()
-  buttonLabel.set(new Transform({
+  buttonLabel.add(new Transform({
     position: new Vector3(0.6, 0, -0.1)
   }))
   const text = new TextShape(songs[i].name)
@@ -98,21 +60,21 @@ for (let i = 0; i < songs.length; i ++){
   text.fontFamily = "serif"
   text.hAlign = "left"  
   text.color = Color3.FromHexString("#800000")
-  buttonLabel.set(text) 
+  buttonLabel.add(text) 
   buttonLabel.setParent(buttonWrapper)
   engine.addEntity(buttonLabel)
 
   buttonArray[i] = new Entity()
-  buttonArray[i].set(new Transform({
+  buttonArray[i].add(new Transform({
     position: new Vector3(0, 0, 0),
     rotation: Quaternion.Euler(90, 0, 0),
     scale: new Vector3(0.05, 0.2, 0.05)
   }))
-  buttonArray[i].set(buttonMaterial)
+  buttonArray[i].add(buttonMaterial)
   buttonArray[i].setParent(buttonWrapper)
-  buttonArray[i].set(new CylinderShape()) 
-  buttonArray[i].set(new ButtonState(0, 0.1))
-  buttonArray[i].set(new OnClick( e => {
+  buttonArray[i].add(new CylinderShape()) 
+  buttonArray[i].add(new ButtonState(0, 0.1))
+  buttonArray[i].add(new OnClick( e => {
     pressButton(i)
   }))
 
@@ -120,7 +82,7 @@ for (let i = 0; i < songs.length; i ++){
 }
 
 ///////////////////////////////////////
-//OTHER FUNCTIONS
+//HELPER FUNCTIONS
 
 function pressButton(i:number){
   let state = buttonArray[i].get(ButtonState)
