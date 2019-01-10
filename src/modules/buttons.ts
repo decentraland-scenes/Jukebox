@@ -12,12 +12,11 @@ export class ButtonState {
   }
 }
 
-
 // Component group
 
 const buttons = engine.getComponentGroup(Transform, ButtonState)
 
-// Button system
+// Button system   (buttons remain pressed)
 
 export class PushButton implements ISystem {
     update() {
