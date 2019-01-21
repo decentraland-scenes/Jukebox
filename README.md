@@ -46,3 +46,8 @@ Any dependencies are installed and then the CLI will open the scene in a new bro
 Click the buttons on the jukebox to select different songs.
 
 Learn more about how to build your own scenes in our [documentation](https://docs.decentraland.org/) site.
+
+
+## Copyright info
+
+This scene is protected with a standard Apache 2 licence. See the terms and conditions in the [LICENSE](/LICENSE) file.
