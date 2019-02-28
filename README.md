@@ -15,7 +15,7 @@ A scene where you can play different songs by pressing buttons on a jukebox.
 ![](screenshot/screenshot.png)
 
 <!--
-[Explore the scene](): this link takes you to a copy of the scene deployed to a remote server where you can interact with it just as if you were running `dcl start` locally.
+[Explore the scene](https://export-xyykzhedzz.now.sh): this link takes you to a copy of the scene deployed to a remote server where you can interact with it just as if you were running `dcl start` locally.
 -->
 
 **Install the CLI**
