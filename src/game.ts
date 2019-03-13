@@ -24,7 +24,7 @@ const jukebox = new Entity()
 jukebox.addComponent(new GLTFShape("models/Jukebox.gltf"))
 jukebox.addComponent(new Transform({
   position: new Vector3(5, 0, 9.5),
-  rotation: Quaternion.Euler(0, 0 ,0),
+  rotation: Quaternion.Euler(0, 180 ,0),
   scale: new Vector3(0.6, 0.6, 0.6)
 }))
 engine.addEntity(jukebox)
@@ -40,13 +40,14 @@ buttonMaterial.albedoColor = Color3.FromHexString("#cc0000")
 let buttonArray =  []
 
 for (let i = 0; i < songs.length; i ++){
-  let posX = i % 2 == 0 ? -.4 : .1;
+  let posX = i % 2 == 0 ? .4 : -.2;
   let posY = Math.floor(i / 2) == 0 ? 1.9 : 1.77;
 
   // groups the button itself and label
   const buttonWrapper = new Entity()
   buttonWrapper.addComponent(new Transform({
-    position: new Vector3(posX, posY, -0.7)
+    position: new Vector3(posX, posY, 0.7),
+    rotation: Quaternion.Euler(0, 180 ,0)
   }))
   buttonWrapper.setParent(jukebox)
   engine.addEntity(buttonWrapper)
