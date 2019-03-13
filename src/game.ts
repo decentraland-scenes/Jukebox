@@ -79,6 +79,7 @@ for (let i = 0; i < songs.length; i ++){
     pressButton(i)
   }))
 
+  // generate audio components
   let song = new AudioClip(songs[i].src)
 
   let audioSource = new AudioSource(song)
@@ -95,7 +96,6 @@ function pressButton(i:number){
   let state = buttonArray[i].getComponent(ButtonState)
     state.pressed = !state.pressed
     if (state.pressed){
-      //playSong(i)
       buttonArray[i].getComponent(AudioSource).playing = true
     }
     for (let j = 0; j < songs.length; j ++){
@@ -105,22 +105,3 @@ function pressButton(i:number){
       }
     }
 }
-
-
-
-
-
-// function playSong(i: number){
-//   let songPath = songs[i].src
-//   log(songPath)
-//   executeTask(async () => {
-//     try {
-//       await playSound(songs[i].src, {
-//         loop: true,
-//         volume: 100,
-//       })
-//     } catch {
-//       log('failed to play sound')
-//     }
-//   })
-// }
