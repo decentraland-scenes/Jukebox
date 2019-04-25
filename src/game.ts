@@ -47,7 +47,7 @@ for (let i = 0; i < songs.length; i ++){
   const buttonWrapper = new Entity()
   buttonWrapper.addComponent(new Transform({
     position: new Vector3(posX, posY, 0.7),
-    rotation: Quaternion.Euler(0,180,0)
+    rotation: Quaternion.Euler(0, 180 ,0)
   }))
   buttonWrapper.setParent(jukebox)
   engine.addEntity(buttonWrapper)
