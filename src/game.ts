@@ -1,4 +1,3 @@
-import { playSound } from '@decentraland/SoundController'
 import { PushButton, ButtonState } from './modules/buttons';
 
 
@@ -22,13 +21,14 @@ engine.addSystem(new PushButton)
 
 // Jukebox
 const jukebox = new Entity()
-jukebox.add(new GLTFShape("models/Jukebox.gltf"))
-jukebox.add(new Transform({
+jukebox.addComponent(new GLTFShape("models/Jukebox.gltf"))
+jukebox.addComponent(new Transform({
   position: new Vector3(5, 0, 9.5),
-  rotation: Quaternion.Euler(0, 0 ,0),
+  rotation: Quaternion.Euler(0, 180 ,0),
   scale: new Vector3(0.6, 0.6, 0.6)
 }))
 engine.addEntity(jukebox)
+
 
 
 // Material for buttons
@@ -40,19 +40,20 @@ buttonMaterial.albedoColor = Color3.FromHexString("#cc0000")
 let buttonArray =  []
 
 for (let i = 0; i < songs.length; i ++){
-  let posX = i % 2 == 0 ? -.4 : .1;
+  let posX = i % 2 == 0 ? -.1 : .4;
   let posY = Math.floor(i / 2) == 0 ? 1.9 : 1.77;
 
   // groups the button itself and label
   const buttonWrapper = new Entity()
-  buttonWrapper.add(new Transform({
-    position: new Vector3(posX, posY, -0.7)
+  buttonWrapper.addComponent(new Transform({
+    position: new Vector3(posX, posY, 0.7),
+    rotation: Quaternion.Euler(0, 180 ,0)
   }))
   buttonWrapper.setParent(jukebox)
   engine.addEntity(buttonWrapper)
 
   const buttonLabel = new Entity()
-  buttonLabel.add(new Transform({
+  buttonLabel.addComponent(new Transform({
     position: new Vector3(0.6, 0, -0.1)
   }))
   const text = new TextShape(songs[i].name)
@@ -60,23 +61,30 @@ for (let i = 0; i < songs.length; i ++){
   text.fontFamily = "serif"
   text.hAlign = "left"  
   text.color = Color3.FromHexString("#800000")
-  buttonLabel.add(text) 
+  buttonLabel.addComponent(text) 
   buttonLabel.setParent(buttonWrapper)
   engine.addEntity(buttonLabel)
 
   buttonArray[i] = new Entity()
-  buttonArray[i].add(new Transform({
+  buttonArray[i].addComponent(new Transform({
     position: new Vector3(0, 0, 0),
     rotation: Quaternion.Euler(90, 0, 0),
     scale: new Vector3(0.05, 0.2, 0.05)
   }))
-  buttonArray[i].add(buttonMaterial)
+  buttonArray[i].addComponent(buttonMaterial)
   buttonArray[i].setParent(buttonWrapper)
-  buttonArray[i].add(new CylinderShape()) 
-  buttonArray[i].add(new ButtonState(0, 0.1))
-  buttonArray[i].add(new OnClick( e => {
+  buttonArray[i].addComponent(new CylinderShape()) 
+  buttonArray[i].addComponent(new ButtonState(0, 0.1))
+  buttonArray[i].addComponent(new OnPointerDown( e => {
     pressButton(i)
   }))
+
+  // generate audio components
+  let song = new AudioClip(songs[i].src)
+
+  let audioSource = new AudioSource(song)
+  audioSource.playing = false
+  buttonArray[i].addComponent(audioSource)
 
   engine.addEntity(buttonArray[i])
 }
@@ -85,29 +93,15 @@ for (let i = 0; i < songs.length; i ++){
 //HELPER FUNCTIONS
 
 function pressButton(i:number){
-  let state = buttonArray[i].get(ButtonState)
+  let state = buttonArray[i].getComponent(ButtonState)
     state.pressed = !state.pressed
     if (state.pressed){
-      playSong(i)
+      buttonArray[i].getComponent(AudioSource).playing = true
     }
     for (let j = 0; j < songs.length; j ++){
       if (j !== i){
-        buttonArray[j].get(ButtonState).pressed = false
+        buttonArray[j].getComponent(ButtonState).pressed = false
+        buttonArray[j].getComponent(AudioSource).playing = false
       }
     }
-}
-
-function playSong(i: number){
-  let songPath = songs[i].src
-  log(songPath)
-  executeTask(async () => {
-    try {
-      await playSound(songs[i].src, {
-        loop: true,
-        volume: 100,
-      })
-    } catch {
-      log('failed to play sound')
-    }
-  })
 }
