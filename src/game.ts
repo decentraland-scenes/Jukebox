@@ -75,7 +75,7 @@ for (let i = 0; i < songs.length; i ++){
   buttonArray[i].setParent(buttonWrapper)
   buttonArray[i].addComponent(new CylinderShape()) 
   buttonArray[i].addComponent(new ButtonState(0, 0.1))
-  buttonArray[i].addComponent(new OnPointerDown( e => {
+  buttonArray[i].addComponent(new OnClick( e => {
     pressButton(i)
   }))
 
