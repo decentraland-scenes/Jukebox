@@ -54,10 +54,10 @@ for (let i = 0; i < songs.length; i ++){
 
   const buttonLabel = new Entity()
   buttonLabel.addComponent(new Transform({
-    position: new Vector3(0.6, 0, -0.1)
+    position: new Vector3(0.05, 0, -0.1)
   }))
   const text = new TextShape(songs[i].name)
-  text.fontSize = 3.5
+  text.fontSize = 1
   //text.fontFamily = "serif"
   text.hTextAlign = "left"
   text.color = Color3.FromHexString("#800000")
