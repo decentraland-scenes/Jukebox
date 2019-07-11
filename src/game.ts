@@ -93,15 +93,46 @@ for (let i = 0; i < songs.length; i ++){
 //HELPER FUNCTIONS
 
 function pressButton(i:number){
-  let state = buttonArray[i].getComponent(ButtonState)
-    state.pressed = !state.pressed
-    if (state.pressed){
-      buttonArray[i].getComponent(AudioSource).playing = true
-    }
-    for (let j = 0; j < songs.length; j ++){
-      if (j !== i){
-        buttonArray[j].getComponent(ButtonState).pressed = false
-        buttonArray[j].getComponent(AudioSource).playing = false
-      }
-    }
-}
+	let state = buttonArray[i].getComponent(ButtonState)
+	  state.pressed = !state.pressed
+	  sceneMessageBus.emit("buttonPressed", {button:i, pressed: state.pressed})
+  }
+  
+  // To execute when pressing a button a panel
+	sceneMessageBus.on("buttonPressed", (info) => {	
+		if (info.pressed){
+		  log("pressed ", info.button)
+		  buttonArray[info.button].getComponent(AudioSource).playing = true
+		}
+		for (let i = 0; i < songs.length; i ++){
+		  if (i !== info.button){
+			buttonArray[i].getComponent(ButtonState).pressed = false
+			buttonArray[i].getComponent(AudioSource).playing = false
+		  }
+		}
+	});
+  
+  
+	// To get the initial state of the scene when joining
+	sceneMessageBus.emit("getState",{})
+	
+	// To return the initial state of the scene to new players
+	sceneMessageBus.on("getState", () => {
+	  for (let i = 0; i < buttonArray.length; i ++){
+		  if (buttonArray[i].getComponent(ButtonState).pressed == true ){
+			  sceneMessageBus.emit("buttonPressed", {button:i, pressed: true})
+			  return
+		  }
+		}
+	});
+  
+  
+  
+  // ground
+  let floor = new Entity()
+  floor.addComponent(new GLTFShape("models/FloorBaseGrass.glb"))
+  floor.addComponent(new Transform({
+	position: new Vector3(8, 0, 8), 
+	scale:new Vector3(1.6, 0.1, 1.6)
+  }))
+  engine.addEntity(floor)
