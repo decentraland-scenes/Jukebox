@@ -1,5 +1,4 @@
-import { PushButton, ButtonState } from './modules/buttons';
-
+import utils from "../node_modules/decentraland-ecs-utils/index"
 
 
 /////// Define song list
@@ -10,11 +9,6 @@ const songs: {src: string, name: string}[] =
   {src: "sounds/Brahms.mp3", name: "Brahms"},
   {src: "sounds/Chopin.mp3", name: "Chopin"},
 ];
-
-
-// Start button system
-engine.addSystem(new PushButton)
-
 
 ///////////////////////////
 // INITIAL ENTITIES
@@ -30,17 +24,14 @@ jukebox.addComponent(new Transform({
 engine.addEntity(jukebox)
 
 
-
-// Material for buttons
-const buttonMaterial = new Material()
-buttonMaterial.albedoColor = Color3.FromHexString("#cc0000")
-
-
 // Buttons
 let buttonArray =  []
 
+let clickOffset = new Vector3(0, 0, 0.02)
+let buttonPos = new Vector3(0, 0, -0.04)
+
 for (let i = 0; i < songs.length; i ++){
-  let posX = i % 2 == 0 ? -.1 : .4;
+  let posX = i % 2 == 0 ? -.03 : .4;
   let posY = Math.floor(i / 2) == 0 ? 1.9 : 1.77;
 
   // groups the button itself and label
@@ -58,7 +49,6 @@ for (let i = 0; i < songs.length; i ++){
   }))
   const text = new TextShape(songs[i].name)
   text.fontSize = 1
-  //text.fontFamily = "serif"
   text.hTextAlign = "left"
   text.color = Color3.FromHexString("#800000")
   buttonLabel.addComponent(text) 
@@ -67,17 +57,42 @@ for (let i = 0; i < songs.length; i ++){
 
   buttonArray[i] = new Entity()
   buttonArray[i].addComponent(new Transform({
-    position: new Vector3(0, 0, 0),
-    rotation: Quaternion.Euler(90, 0, 0),
-    scale: new Vector3(0.05, 0.2, 0.05)
+    position: new Vector3(0, 0, -0.04),
+    rotation: Quaternion.Euler(270, 0, 0),
+    scale: new Vector3(0.3, 0.3, 0.3)
   }))
-  buttonArray[i].addComponent(buttonMaterial)
   buttonArray[i].setParent(buttonWrapper)
-  buttonArray[i].addComponent(new CylinderShape()) 
-  buttonArray[i].addComponent(new ButtonState(0, 0.1))
+  buttonArray[i].addComponent(new GLTFShape("models/Button.glb"))
+
+
+  buttonArray[i].addComponent(new utils.ToggleComponent(utils.ToggleState.Off, value =>{
+	if (value == utils.ToggleState.On){
+		buttonArray[i].addComponentOrReplace(
+			new utils.MoveTransformComponent(
+				buttonPos,
+				clickOffset,
+				0.5
+			))
+		buttonArray[i].getComponent(AudioSource).playing = true
+	}
+	else{
+		if (buttonArray[i].getComponent(AudioSource).playing){
+			buttonArray[i].getComponent(AudioSource).playing = false
+			buttonArray[i].addComponentOrReplace(
+				new utils.MoveTransformComponent(
+					clickOffset,
+					buttonPos,
+					0.5
+				))
+		}	
+	}
+  }))
+
   buttonArray[i].addComponent(new OnClick( e => {
     pressButton(i)
   }))
+
+
 
   // generate audio components
   let song = new AudioClip(songs[i].src)
@@ -93,15 +108,21 @@ for (let i = 0; i < songs.length; i ++){
 //HELPER FUNCTIONS
 
 function pressButton(i:number){
-  let state = buttonArray[i].getComponent(ButtonState)
-    state.pressed = !state.pressed
-    if (state.pressed){
-      buttonArray[i].getComponent(AudioSource).playing = true
-    }
+	
+	buttonArray[i].getComponent(utils.ToggleComponent).toggle()
     for (let j = 0; j < songs.length; j ++){
-      if (j !== i){
-        buttonArray[j].getComponent(ButtonState).pressed = false
-        buttonArray[j].getComponent(AudioSource).playing = false
+      if (j != i){
+		buttonArray[j].getComponent(utils.ToggleComponent).set(utils.ToggleState.Off)
       }
     }
 }
+
+
+// ground
+let floor = new Entity()
+floor.addComponent(new GLTFShape("models/FloorBaseGrass.glb"))
+floor.addComponent(new Transform({
+  position: new Vector3(8, 0, 8), 
+  scale:new Vector3(1.6, 0.1, 1.6)
+}))
+engine.addEntity(floor)
