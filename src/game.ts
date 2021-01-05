@@ -11,6 +11,17 @@ const songs: { src: string; name: string }[] = [
 ///////////////////////////
 // INITIAL ENTITIES
 
+// ground
+let floor = new Entity()
+floor.addComponent(new GLTFShape('models/FloorBaseGrass.glb'))
+floor.addComponent(
+  new Transform({
+    position: new Vector3(8, 0, 8),
+    scale: new Vector3(1.6, 0.1, 1.6)
+  })
+)
+engine.addEntity(floor)
+
 // Jukebox
 const jukebox = new Entity()
 jukebox.addComponent(new GLTFShape('models/Jukebox.gltf'))
@@ -69,14 +80,33 @@ for (let i = 0; i < songs.length; i++) {
   buttonArray[i].setParent(buttonWrapper)
   buttonArray[i].addComponent(new GLTFShape('models/Button.glb'))
 
+  // Click behavior
+  buttonArray[i].addComponent(
+    new OnPointerDown(
+      e => {
+        pressButton(i)
+      },
+      { button: ActionButton.POINTER, hoverText: songs[i].name }
+    )
+  )
+  
+  // Audio components
+  let song = new AudioClip(songs[i].src)
+  let audioSource = new AudioSource(song)
+  audioSource.playing = false
+  buttonArray[i].addComponent(audioSource)
+  
+  // Toggle functionality
   buttonArray[i].addComponent(
     new utils.ToggleComponent(utils.ToggleState.Off, value => {
       if (value == utils.ToggleState.On) {
+        // switch button on
         buttonArray[i].addComponentOrReplace(
           new utils.MoveTransformComponent(buttonPos, clickOffset, 0.5)
         )
         buttonArray[i].getComponent(AudioSource).playing = true
       } else {
+        // switch button off
         if (buttonArray[i].getComponent(AudioSource).playing) {
           buttonArray[i].getComponent(AudioSource).playing = false
           buttonArray[i].addComponentOrReplace(
@@ -86,22 +116,6 @@ for (let i = 0; i < songs.length; i++) {
       }
     })
   )
-
-  buttonArray[i].addComponent(
-    new OnPointerDown(
-      e => {
-        pressButton(i)
-      },
-      { button: ActionButton.POINTER, hoverText: songs[i].name }
-    )
-  )
-
-  // generate audio components
-  let song = new AudioClip(songs[i].src)
-
-  let audioSource = new AudioSource(song)
-  audioSource.playing = false
-  buttonArray[i].addComponent(audioSource)
 
   engine.addEntity(buttonArray[i])
 }
@@ -120,13 +134,3 @@ function pressButton(i: number) {
   }
 }
 
-// ground
-let floor = new Entity()
-floor.addComponent(new GLTFShape('models/FloorBaseGrass.glb'))
-floor.addComponent(
-  new Transform({
-    position: new Vector3(8, 0, 8),
-    scale: new Vector3(1.6, 0.1, 1.6)
-  })
-)
-engine.addEntity(floor)
