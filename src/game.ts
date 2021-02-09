@@ -1,11 +1,11 @@
-import utils from '../node_modules/decentraland-ecs-utils/index'
+import * as utils from '@dcl/ecs-scene-utils'
 
 /////// Define song list
 const songs: { src: string; name: string }[] = [
   { src: 'sounds/Telemann.mp3', name: 'Telemann' },
   { src: 'sounds/Bach.mp3', name: 'Bach' },
   { src: 'sounds/Brahms.mp3', name: 'Brahms' },
-  { src: 'sounds/Chopin.mp3', name: 'Chopin' }
+  { src: 'sounds/Chopin.mp3', name: 'Chopin' },
 ]
 
 ///////////////////////////
@@ -18,7 +18,7 @@ jukebox.addComponent(
   new Transform({
     position: new Vector3(5, 0, 9.5),
     rotation: Quaternion.Euler(0, 180, 0),
-    scale: new Vector3(0.6, 0.6, 0.6)
+    scale: new Vector3(0.6, 0.6, 0.6),
   })
 )
 engine.addEntity(jukebox)
@@ -38,7 +38,7 @@ for (let i = 0; i < songs.length; i++) {
   buttonWrapper.addComponent(
     new Transform({
       position: new Vector3(posX, posY, 0.7),
-      rotation: Quaternion.Euler(0, 180, 0)
+      rotation: Quaternion.Euler(0, 180, 0),
     })
   )
   buttonWrapper.setParent(jukebox)
@@ -47,7 +47,7 @@ for (let i = 0; i < songs.length; i++) {
   const buttonLabel = new Entity()
   buttonLabel.addComponent(
     new Transform({
-      position: new Vector3(0.05, 0, -0.1)
+      position: new Vector3(0.05, 0, -0.1),
     })
   )
   const text = new TextShape(songs[i].name)
@@ -63,14 +63,14 @@ for (let i = 0; i < songs.length; i++) {
     new Transform({
       position: new Vector3(0, 0, -0.04),
       rotation: Quaternion.Euler(270, 0, 0),
-      scale: new Vector3(0.3, 0.3, 0.3)
+      scale: new Vector3(0.3, 0.3, 0.3),
     })
   )
   buttonArray[i].setParent(buttonWrapper)
   buttonArray[i].addComponent(new GLTFShape('models/Button.glb'))
 
   buttonArray[i].addComponent(
-    new utils.ToggleComponent(utils.ToggleState.Off, value => {
+    new utils.ToggleComponent(utils.ToggleState.Off, (value) => {
       if (value == utils.ToggleState.On) {
         buttonArray[i].addComponentOrReplace(
           new utils.MoveTransformComponent(buttonPos, clickOffset, 0.5)
@@ -89,7 +89,7 @@ for (let i = 0; i < songs.length; i++) {
 
   buttonArray[i].addComponent(
     new OnPointerDown(
-      e => {
+      (e) => {
         pressButton(i)
       },
       { button: ActionButton.POINTER, hoverText: songs[i].name }
@@ -126,7 +126,7 @@ floor.addComponent(new GLTFShape('models/FloorBaseGrass.glb'))
 floor.addComponent(
   new Transform({
     position: new Vector3(8, 0, 8),
-    scale: new Vector3(1.6, 0.1, 1.6)
+    scale: new Vector3(1.6, 0.1, 1.6),
   })
 )
 engine.addEntity(floor)
