@@ -117,15 +117,6 @@ for (let i = 0; i < songs.length; i++) {
     })
   )
 
-  buttonArray[i].addComponent(
-    new OnPointerDown(
-      (e) => {
-        pressButton(i)
-      },
-      { button: ActionButton.POINTER, hoverText: songs[i].name }
-    )
-  )
-
   engine.addEntity(buttonArray[i])
 }
 
