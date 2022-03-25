@@ -12,7 +12,7 @@ const songs: { src: string; name: string }[] = [
 // INITIAL ENTITIES
 
 // ground
-let floor = new Entity()
+const floor = new Entity()
 floor.addComponent(new GLTFShape('models/FloorBaseGrass.glb'))
 floor.addComponent(
   new Transform({
@@ -35,14 +35,14 @@ jukebox.addComponent(
 engine.addEntity(jukebox)
 
 // Buttons
-let buttonArray = []
+const buttonArray = []
 
-let clickOffset = new Vector3(0, 0, 0.02)
-let buttonPos = new Vector3(0, 0, -0.04)
+const clickOffset = new Vector3(0, 0, 0.02)
+const buttonPos = new Vector3(0, 0, -0.04)
 
 for (let i = 0; i < songs.length; i++) {
-  let posX = i % 2 == 0 ? -0.03 : 0.4
-  let posY = Math.floor(i / 2) == 0 ? 1.9 : 1.77
+  const posX = i % 2 === 0 ? -0.03 : 0.4
+  const posY = Math.floor(i / 2) === 0 ? 1.9 : 1.77
 
   // groups the button itself and label
   const buttonWrapper = new Entity()
@@ -91,15 +91,15 @@ for (let i = 0; i < songs.length; i++) {
   )
 
   // Audio components
-  let song = new AudioClip(songs[i].src)
-  let audioSource = new AudioSource(song)
+  const song = new AudioClip(songs[i].src)
+  const audioSource = new AudioSource(song)
   audioSource.playing = false
   buttonArray[i].addComponent(audioSource)
 
   // Toggle functionality
   buttonArray[i].addComponent(
     new utils.ToggleComponent(utils.ToggleState.Off, (value) => {
-      if (value == utils.ToggleState.On) {
+      if (value === utils.ToggleState.On) {
         // switch button on
         buttonArray[i].addComponentOrReplace(
           new utils.MoveTransformComponent(buttonPos, clickOffset, 0.5)
@@ -126,7 +126,7 @@ for (let i = 0; i < songs.length; i++) {
 function pressButton(i: number) {
   buttonArray[i].getComponent(utils.ToggleComponent).toggle()
   for (let j = 0; j < songs.length; j++) {
-    if (j != i) {
+    if (j !== i) {
       buttonArray[j]
         .getComponent(utils.ToggleComponent)
         .set(utils.ToggleState.Off)
